@@ -49,12 +49,30 @@
 
 /* USER CODE BEGIN PV */
 TaskHandle_t h_leds = NULL;
+TaskHandle_t h_fusb_302 = NULL;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == BTN_Pin){
+		//do something
+	}
+}
+
+void fusb_302_task(void * unused){
+	uint8_t FUSB302BMPX_SLV_ADDR = 0b0100010;
+	uint8_t fusb_ver = 0;
+	HAL_I2C_Mem_Read(&hi2c1,(uint16_t) FUSB302BMPX_SLV_ADDR<<1, 0x01, 8, &fusb_ver, 8, HAL_MAX_DELAY);
+	vTaskDelay(pdMS_TO_TICKS(5000));
+	for(;;){
+
+	}
+}
+
 void leds_task(void * unused){
 	GPIO_TypeDef * GPIO_port[5]={ LD0_GPIO_Port, LD1_GPIO_Port, LD2_GPIO_Port, LD3_GPIO_Port, LD4_GPIO_Port};
 	uint16_t GPIO_pins[5]={ LD0_Pin, LD1_Pin, LD2_Pin, LD3_Pin, LD4_Pin};
@@ -109,6 +127,11 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim1);
 	BaseType_t ret;
 	ret = xTaskCreate(leds_task, "leds_task", DEFAULT_STACK_SIZE, NULL, 1, &h_leds);
+	if(ret != pdPASS)
+	{
+		Error_Handler();
+	}
+	ret = xTaskCreate(fusb_302_task, "fusb_task", DEFAULT_STACK_SIZE, NULL, 2, &h_fusb_302);
 	if(ret != pdPASS)
 	{
 		Error_Handler();
