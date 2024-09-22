@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "adc.h"
 #include "i2c.h"
 #include "tim.h"
@@ -36,7 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define DEFAULT_STACK_SIZE 512
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,16 +48,22 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+TaskHandle_t h_leds = NULL;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if(htim->Instance == TIM1){
-		HAL_GPIO_TogglePin(LD0_GPIO_Port, LD0_Pin);
+void leds_task(void * unused){
+	GPIO_TypeDef * GPIO_port[5]={ LD0_GPIO_Port, LD1_GPIO_Port, LD2_GPIO_Port, LD3_GPIO_Port, LD4_GPIO_Port};
+	uint16_t GPIO_pins[5]={ LD0_Pin, LD1_Pin, LD2_Pin, LD3_Pin, LD4_Pin};
+	vTaskDelay(pdMS_TO_TICKS(5000));
+	for(uint8_t led_number=1; led_number<5; led_number++){
+		HAL_GPIO_WritePin(GPIO_port[led_number], GPIO_pins[led_number], GPIO_PIN_RESET);
+	}
+	for(;;){
+
 	}
 }
 /* USER CODE END PFP */
@@ -100,8 +107,22 @@ int main(void)
 	MX_TIM1_Init();
 	/* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim1);
+	BaseType_t ret;
+	ret = xTaskCreate(leds_task, "leds_task", DEFAULT_STACK_SIZE, NULL, 1, &h_leds);
+	if(ret != pdPASS)
+	{
+		Error_Handler();
+	}
+	vTaskStartScheduler();
 	/* USER CODE END 2 */
 
+	/* Call init function for freertos objects (in freertos.c) */
+	MX_FREERTOS_Init();
+
+	/* Start scheduler */
+	osKernelStart();
+
+	/* We should never get here as control is now taken by the scheduler */
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1)
@@ -163,6 +184,29 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+ * @brief  Period elapsed callback in non blocking mode
+ * @note   This function is called  when TIM2 interrupt took place, inside
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	/* USER CODE BEGIN Callback 0 */
+
+	/* USER CODE END Callback 0 */
+	if (htim->Instance == TIM2) {
+		HAL_IncTick();
+	}
+	/* USER CODE BEGIN Callback 1 */
+	else if (htim->Instance == TIM1){
+		HAL_GPIO_TogglePin(LD0_GPIO_Port, LD0_Pin);
+	}
+	/* USER CODE END Callback 1 */
+}
 
 /**
  * @brief  This function is executed in case of error occurrence.
