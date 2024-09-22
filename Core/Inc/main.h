@@ -63,6 +63,7 @@ void Error_Handler(void);
 #define USB_SENSE_GPIO_Port GPIOA
 #define BTN_Pin GPIO_PIN_7
 #define BTN_GPIO_Port GPIOA
+#define BTN_EXTI_IRQn EXTI9_5_IRQn
 #define LD4_Pin GPIO_PIN_0
 #define LD4_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_1
@@ -83,6 +84,9 @@ void Error_Handler(void);
 #define CHARG_ON_GPIO_Port GPIOA
 #define CHARG_OFF_Pin GPIO_PIN_3
 #define CHARG_OFF_GPIO_Port GPIOB
+#define INT_N_Pin GPIO_PIN_5
+#define INT_N_GPIO_Port GPIOB
+#define INT_N_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 
