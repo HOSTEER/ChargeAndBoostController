@@ -93,10 +93,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(CHARG_OFF_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = INT_N_Pin;
+  GPIO_InitStruct.Pin = FUSB_IRQ_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(INT_N_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(FUSB_IRQ_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);

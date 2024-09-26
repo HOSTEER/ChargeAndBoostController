@@ -61,6 +61,10 @@ void Error_Handler(void);
 #define BAT_SENSE_GPIO_Port GPIOA
 #define USB_SENSE_Pin GPIO_PIN_1
 #define USB_SENSE_GPIO_Port GPIOA
+#define UART_TX_Pin GPIO_PIN_2
+#define UART_TX_GPIO_Port GPIOA
+#define UART_RX_Pin GPIO_PIN_3
+#define UART_RX_GPIO_Port GPIOA
 #define BTN_Pin GPIO_PIN_7
 #define BTN_GPIO_Port GPIOA
 #define BTN_EXTI_IRQn EXTI9_5_IRQn
@@ -84,9 +88,13 @@ void Error_Handler(void);
 #define CHARG_ON_GPIO_Port GPIOA
 #define CHARG_OFF_Pin GPIO_PIN_3
 #define CHARG_OFF_GPIO_Port GPIOB
-#define INT_N_Pin GPIO_PIN_5
-#define INT_N_GPIO_Port GPIOB
-#define INT_N_EXTI_IRQn EXTI9_5_IRQn
+#define FUSB_IRQ_Pin GPIO_PIN_5
+#define FUSB_IRQ_GPIO_Port GPIOB
+#define FUSB_IRQ_EXTI_IRQn EXTI9_5_IRQn
+#define FUSB_SCL_Pin GPIO_PIN_6
+#define FUSB_SCL_GPIO_Port GPIOB
+#define FUSB_SDA_Pin GPIO_PIN_7
+#define FUSB_SDA_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

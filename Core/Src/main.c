@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "i2c.h"
 #include "tim.h"
 #include "usart.h"
@@ -27,7 +28,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "PDUser.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,16 +59,18 @@ void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if(GPIO_Pin == BTN_Pin){
-		//do something
-	}
+int __io_putchar(int ch){
+	HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
 }
 
 void fusb_302_task(void * unused){
 	uint8_t FUSB302BMPX_SLV_ADDR = 0b0100010;
 	uint8_t fusb_ver = 0;
 	HAL_I2C_Mem_Read(&hi2c1,(uint16_t) FUSB302BMPX_SLV_ADDR<<1, 0x01, 8, &fusb_ver, 8, HAL_MAX_DELAY);
+	//vTaskDelay(pdMS_TO_TICKS(5000));
+	printf("Starting\r\n");
+	pd_user_main();
 	vTaskDelay(pdMS_TO_TICKS(5000));
 	for(;;){
 
@@ -119,6 +123,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
